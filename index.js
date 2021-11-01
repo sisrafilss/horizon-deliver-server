@@ -44,6 +44,15 @@ async function run() {
           }
       });
 
+      // GET API (A service based on _id - for an order details) 
+      app.get('/placeOrder/:id', async (req, res) => {
+        const id = req.params.id;
+        console.log(id);
+        const query = {_id: ObjectId(id)};
+        const result = await serviceCollection.findOne(query);
+        res.json(result);
+    });
+
         // POST API (add Service)
         // app.post('/services', async(req, res) => {
         //     const service = req.body;
