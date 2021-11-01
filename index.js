@@ -66,33 +66,15 @@ async function run() {
 
     //  POST API (add Service)
     app.post("/placeOrder/:id", async (req, res) => {
-      const userInfo = req.body;
+      const userOrderInfo = req.body;
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const matchedService = await serviceCollection.findOne(query);
 
-      const resp = await ordersCollection.findOne({title: matchedService.title});
-      
-      if (resp === null) {
-        const { name, email, address, city, phone } = userInfo;
-
-      matchedService.name = name;
-      matchedService.email = email;
-      matchedService.address = address;
-      matchedService.city = city;
-      matchedService.phone = phone;
-      matchedService.status = 'Pending';
-
-      const result = await ordersCollection.insertOne(matchedService);
+      userOrderInfo.status = 'Pending';
+      userOrderInfo.orderedService = matchedService;
+      const result = await ordersCollection.insertOne(userOrderInfo);
       res.json(result);
-      }
-      else {
-        res.json({
-          statusCode: 3,
-          caused: 'You have already ordered this service. Please choose another one.'
-        });
-      }
-
       
     });
 
