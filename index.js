@@ -11,20 +11,22 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// MongoDB URI
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.quv1r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
+// MongoDB Run function
 async function run() {
   try {
     await client.connect();
 
     const database = client.db("horizon");
-    const serviceCollection = database.collection("services");
-    const blogsCollection = database.collection("blogs");
-    const ordersCollection = database.collection("orders");
+    const serviceCollection = database.collection("services"); // All Services
+    const blogsCollection = database.collection("blogs"); // All blogs data
+    const ordersCollection = database.collection("orders"); // User orders with their detail
 
     // GET API (Services)
     app.get("/highlighted-services", async (req, res) => {
@@ -76,7 +78,6 @@ async function run() {
         options
       );
 
-      console.log(result);
       res.json(result);
     });
 
@@ -127,25 +128,6 @@ async function run() {
       const result = await ordersCollection.deleteOne(query);
       res.json(result);
     });
-
-    // POST API (add Service)
-    // app.post('/services', async(req, res) => {
-    //     const service = req.body;
-    //     const result = await serviceCollection.insertOne(service);
-    //     console.log(result);
-    //     res.json(result);
-
-    // });
-
-    // Delete API
-    // app.delete('/services/:id', async (req, res) => {
-    //     const id = req.params.id;
-    //     const query = { _id: ObjectId(id) }
-    //     const result = await serviceCollection.deleteOne(query);
-    //     res.json(result);
-    // })
-
-    // console.log(result);
   } finally {
     // await client.close();
   }
