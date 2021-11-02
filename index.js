@@ -35,6 +35,15 @@ async function run() {
       }
     });
 
+    // GET API (All Order)
+    app.get("/manage-all-orders", async (req, res) => {
+      const cursor = ordersCollection.find({});
+      if (cursor) {
+        const result = await cursor.toArray();
+        res.json(result);
+      }
+    });
+
     // GET API (Blogs)
     app.get("/latest-blogs", async (req, res) => {
       const cursor = blogsCollection.find({});
@@ -80,6 +89,14 @@ async function run() {
 
     // Delete API (delete an order by user)
     app.delete("/my-orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await ordersCollection.deleteOne(query);
+      res.json(result);
+    });
+
+    // Delete API (delete an order by ADMIN from all orders collection)
+    app.delete("/manage-all-orders/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(query);
