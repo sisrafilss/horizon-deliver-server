@@ -61,6 +61,32 @@ async function run() {
       res.json(result);
     });
 
+    // PATCH API - Update Order Status
+    app.patch("/manage-all-orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body;
+
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: false };
+      const updateDoc = { $set: status };
+
+      const result = await ordersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+
+      console.log(result);
+      res.json(result);
+    });
+
+    // POST API (Add a new service by admin)
+    app.post("/add-a-new-service", async (req, res) => {
+      const service = req.body;
+      const result = await serviceCollection.insertOne(service);
+      res.json(result);
+    });
+
     // POST API (A service based on _id - for an order details)
     app.post("/my-orders", async (req, res) => {
       const userEmail = req.body.email;
@@ -73,18 +99,17 @@ async function run() {
       }
     });
 
-    //  POST API (add Service)
+    //  POST API (Place an order by user)
     app.post("/placeOrder/:id", async (req, res) => {
       const userOrderInfo = req.body;
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const matchedService = await serviceCollection.findOne(query);
 
-      userOrderInfo.status = 'Pending';
+      userOrderInfo.status = "Pending";
       userOrderInfo.orderedService = matchedService;
       const result = await ordersCollection.insertOne(userOrderInfo);
       res.json(result);
-      
     });
 
     // Delete API (delete an order by user)
