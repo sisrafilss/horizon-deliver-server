@@ -30,7 +30,7 @@ async function run() {
     app.get("/highlighted-services", async (req, res) => {
       const cursor = serviceCollection.find({});
       if (cursor) {
-        const result = await cursor.limit(6).toArray();
+        const result = await cursor.toArray();
         res.json(result);
       }
     });
